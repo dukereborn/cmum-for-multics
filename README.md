@@ -82,6 +82,27 @@ setup your cronjob or scheduled task to execute the scrip in your given interval
 php cmumformultics.php -l <loop interval in seconds, default is 300>
 ```
 
+## User usage in CSP MySQL User Manager
+### Profiles
+In cmum, when adding profiles, enter the multics profile port number in the cspvalue field
+
+### Users
+For cmum-for-multics to find what users to use where, enter the corresponding cam in the boxtype field on each user. Available values are:
+```
+cccam
+mgcamd
+newcamd
+```
+
+### Fields used by cmum-for-multics
+```
+Username
+Password
+Displayname
+Profiles
+IP mask
+```
+
 ## Contact me
 If you find any bugs, got an idea or just wanna say "Hi!", send me a email on dukereborn@gmail.com. You can also follow me on twitter for updates and news http://www.twitter.com/dukereborn/
 
