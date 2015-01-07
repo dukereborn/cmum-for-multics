@@ -16,6 +16,9 @@ define("CCCAMFILE","");
 define("MGCAMDFILE","");
 define("NEWCAMDFILE","");
 
+// misc settings
+define("PROFILEFIELD","cspvalue");
+
 // ** CONFIG SECTION END ** //
 
 // ** SCRIPT, DO NOT EDIT ANYTING BELOW ** //
@@ -29,7 +32,7 @@ function consolewrite($input) {
 }
 
 function checkconfig() {
-	if(DBHOST=="" || DBUSER=="" || DBPASS=="" || DBNAME=="" || CHARSET=="" || TIMEZONE=="") {
+	if(DBHOST=="" || DBUSER=="" || DBPASS=="" || DBNAME=="" || CHARSET=="" || TIMEZONE=="" || PROFILEFIELD=="") {
 		consolewrite("configuration incomplete, aborting");
 		exit;
 	}
@@ -56,10 +59,10 @@ function checkfile($type,$file) {
 
 function getprofiles() {
 	$mysqli=new mysqli(DBHOST,DBUSER,DBPASS,DBNAME);
-		$psql=$mysqli->query("SELECT id,cspvalue FROM profiles");
+		$psql=$mysqli->query("SELECT id,".PROFILEFIELD." FROM profiles");
 		$profiles=array();
 			while($pdata=$psql->fetch_array()) {
-				$profiles[$pdata["id"]]=$pdata["cspvalue"];
+				$profiles[$pdata["id"]]=$pdata[PROFILEFIELD];
 			}
 	mysqli_close($mysqli);
 return($profiles);
