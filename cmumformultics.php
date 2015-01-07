@@ -23,7 +23,7 @@ define("PROFILEFIELD","cspvalue");
 
 // ** SCRIPT, DO NOT EDIT ANYTING BELOW ** //
 
-define("VERSION","0.1.0");
+define("VERSION","0.2.0");
 date_default_timezone_set(TIMEZONE);
 mb_internal_encoding(CHARSET);
 
