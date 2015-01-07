@@ -33,6 +33,9 @@ define("TIMEZONE","Europe/London"); <- change to match your timezone, list found
 define("CCCAMFILE",""); <- full path to multics cccam user file, leave empty if not used
 define("MGCAMDFILE",""); <- full path to multics mgcamd user file, leave empty if not used
 define("NEWCAMDFILE",""); <- full path to multics newcamd user file, leave empty if not used
+
+// misc settings
+define("PROFILEFIELD","cspvalue"); <- what cmum profile field to use for profile data (cspvalue or comment)
 ```
 
 sample cmum-for-multics config
@@ -51,6 +54,9 @@ define("TIMEZONE","Europe/London");
 define("CCCAMFILE","/usr/share/multics/cccamusers");
 define("MGCAMDFILE","/usr/share/multics/mgcamdusers");
 define("NEWCAMDFILE","/usr/share/multics/newcamdusers");
+
+// misc settings
+define("PROFILEFIELD","cspvalue");
 ```
 
 ## Change MultiCS to fetch users from file
