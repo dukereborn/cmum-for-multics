@@ -22,8 +22,8 @@ define("PROFILEFIELD","cspvalue");
 // ** CONFIG SECTION END ** //
 
 // ** SCRIPT, DO NOT EDIT ANYTING BELOW ** //
-
-define("VERSION","0.2.0");
+define("VERSION","0.3.0");
+error_reporting(0);
 date_default_timezone_set(TIMEZONE);
 mb_internal_encoding(CHARSET);
 
@@ -32,10 +32,28 @@ function consolewrite($input) {
 }
 
 function checkconfig() {
-	if(DBHOST=="" || DBUSER=="" || DBPASS=="" || DBNAME=="" || CHARSET=="" || TIMEZONE=="" || PROFILEFIELD=="") {
+	if(empty(DBHOST) || empty(DBUSER) || empty(DBPASS) || empty(DBNAME) || empty(CHARSET) || empty(TIMEZONE) || empty(PROFILEFIELD)) {
 		consolewrite("configuration incomplete, aborting");
 		exit;
 	}
+}
+
+function checkdatabase() {
+	$mysqli=new mysqli(DBHOST,DBUSER,DBPASS,DBNAME);
+		if(mysqli_connect_errno()) {
+			consolewrite(strtolower(mysqli_connect_error()));
+			consolewrite("cannot connect to mysql server, aborting");
+			mysqli_close($mysqli);
+			exit;
+		} else {
+			$sql=$mysqli->query("SELECT cmumversion,dbversion FROM settings WHERE id='1'");
+			$data=$sql->fetch_array();
+			mysqli_close($mysqli);
+				if($data["cmumversion"]<"3.0.0" || $data["dbversion"]<"3.0.0") {
+					consolewrite("unsupported cmum version, aborting");
+					exit;
+				}
+		}
 }
 
 function checkfile($type,$file) {
@@ -190,6 +208,8 @@ function gennewcamdusers($file) {
 consolewrite("cmum-for-multics v".VERSION." by dukereborn");
 consolewrite("checking configuration");
 	checkconfig();
+consolewrite("checking database");
+	checkdatabase();
 consolewrite("checking loop");
 	if(isset($argv[1]) && $argv[1]=="-l") {
 		$loop="1";
