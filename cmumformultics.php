@@ -1,23 +1,23 @@
 <?php
 // ** CONFIG SECTION START ** //
 
-// mysql settings for cmum3 database
-define("DBHOST","");
-define("DBUSER","");
-define("DBPASS","");
+// mysql settings for cmum3 database, fill after "," and inside "".
+define("DBHOST",""); //must be an ip or domain like: 212.221.121.111 or myserver.dyndns.org or mydomain.com
+define("DBUSER",""); //must be a valid username that have access to the database you host the CSP configuration
+define("DBPASS",""); //here goes the password for the user specified above
 define("DBNAME","");
 
 // local settings
-define("CHARSET","utf-8");
-define("TIMEZONE","Europe/London");
+define("CHARSET","utf-8"); //leave it as it is, recommended
+define("TIMEZONE","Europe/London"); //change it according to timezone of your country
 
 // multics settings
-define("CCCAMFILE","");
-define("MGCAMDFILE","");
-define("NEWCAMDFILE","");
+define("CCCAMFILE",""); //here goes the multics cccam file location wich can be: /var/etc/multics/cccam.list
+define("MGCAMDFILE",""); //same as above but for mgcamd
+define("NEWCAMDFILE",""); //same as above but for newcamd
 
 // misc settings
-define("PROFILEFIELD","cspvalue");
+define("PROFILEFIELD","cspvalue"); //need to ask the developer for more info
 
 // ** CONFIG SECTION END ** //
 
@@ -32,7 +32,7 @@ function consolewrite($input) {
 }
 
 function checkconfig() {
-	if(DBHOST=="" || DBUSER=="" || DBPASS=="" || DBNAME=="" || CHARSET=="" || TIMEZONE=="" || PROFILEFIELD=="") {
+	if(empty(DBHOST), || empty(DBUSER), || empty(DBPASS), || empty(DBNAME), || empty(CHARSET), || empty(TIMEZONE), || empty(PROFILEFIELD)) {
 		consolewrite("configuration incomplete, aborting");
 		exit;
 	}
@@ -51,9 +51,16 @@ function checkfile($type,$file) {
 			fclose($exfile);
 		}
 	} else {
-		consolewrite($type." file do not exists, creating file");
-		$newfile=fopen($file,"w");
-		fclose($newfile);
+		consolewrite($type." file may not exists, trying to create one!");
+		try {
+			$newfile=fopen($file,"w");
+			fclose($newfile);
+		} catch (ErrorException $e) {
+			if(isset($e) && !empty($e)){
+				consolewrite($e);
+				exit;
+			}	
+		}
 	}
 }
 
@@ -103,7 +110,7 @@ function gencccamusers($file) {
  					} else {
 	 					$usrdisplayname="";
  					}
-					$cccamusers.="F: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres."; ".$usripmask.$usrdisplayname."}\n";	
+					$cccamusers.='F: {$usrdata["user"]} {$usrdata["password"]} { {$profres}; {$usripmask.$usrdisplayname} }\n';	
 				}
 		mysqli_close($mysqli);
 		$usrfile=fopen($file,"w");
