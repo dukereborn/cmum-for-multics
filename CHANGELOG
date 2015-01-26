@@ -6,8 +6,9 @@ cmum-for-multics
 [-] Bug fixed
 
 
-0.3.0 [not yet released]
+0.3.0 [2015-01-26]
 [+] Database check
+[+] Internal start-/expiredate
 [#] Minor code improvements
 
 

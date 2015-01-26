@@ -18,6 +18,7 @@ define("NEWCAMDFILE","");
 
 // misc settings
 define("PROFILEFIELD","cspvalue");
+define("STARTEXPIREDATE","0");
 
 // ** CONFIG SECTION END ** //
 
@@ -86,42 +87,77 @@ function getprofiles() {
 return($profiles);
 }
 
-function gencccamusers($file) {
+function checkuserdate($start,$expire,$enabled) {
+	if($start<>"0000-00-00" && $expire<>"0000-00-00") {
+		if(time()>=strtotime($start) && time()<=strtotime($expire) && $enabled<>"0") {
+			$status="1";
+		} else  {
+			$status="0";
+		}
+	} elseif($start<>"0000-00-00" && $expire=="0000-00-00") {
+		if(time()>=strtotime($start) && $enabled<>"0") {
+			$status="1";
+		} else {
+			$status="0";
+		}
+	} elseif($start=="0000-00-00" && $expire<>"0000-00-00") {
+		if(time()<=strtotime($expire) && $enabled<>"0") {
+			$status="1";
+		} else {
+			$status="0";
+		}
+	} elseif($start=="0000-00-00" && $expire=="0000-00-00") {
+		if($enabled=="1" || $enabled=="") {
+			$status="1";
+		} else {
+			$status="0";
+		}
+	}
+return($status);
+}
+
+function gencccamusers($file,$expire) {
 	consolewrite("generating cccam users");
 		$cccamusers="";
 		$mysqli=new mysqli(DBHOST,DBUSER,DBPASS,DBNAME);
-			$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles FROM users WHERE (enabled='1' OR enabled='') AND boxtype='cccam'");
+			if($expire=="1") {
+				$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles,enabled,startdate,expiredate FROM users WHERE boxtype='cccam'");
+			} else {
+				$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles FROM users WHERE (enabled='1' OR enabled='') AND boxtype='cccam'");	
+			}
 				while($usrdata=$users->fetch_array()) {
-					$profres="";
-					$profvalues="";
-					if($usrdata["profiles"]=="") {
+					if($expire=="1" && checkuserdate($usrdata["startdate"],$usrdata["expiredate"],$usrdata["enabled"])=="1" || $expire=="0") {
 						$profres="";
-					} else {
-						$dbprof=unserialize($usrdata["profiles"]);
-						$cmumprof=getprofiles();
-							if($dbprof<>"" && $dbprof<>"N;") {
-								foreach($dbprof as $useprof) {
-									$profvalues.=$cmumprof[$useprof].", ";
+						$profvalues="";
+						if($usrdata["profiles"]=="") {
+							$profres="";
+						} else {
+							$dbprof=unserialize($usrdata["profiles"]);
+							$cmumprof=getprofiles();
+								if($dbprof<>"" && $dbprof<>"N;") {
+									foreach($dbprof as $useprof) {
+										$profvalues.=$cmumprof[$useprof].", ";
+									}
+									$profres=trim($profvalues);
+									$profres=substr($profres,0,-1);
+									$profdata="";
+									$profvalues="";
+								} else {
+									$profres="";
 								}
-								$profres=trim($profvalues);
-								$profres=substr($profres,0,-1);
-								$profdata="";
-								$profvalues="";
-							} else {
-								$profres="";
-							}
+						}
+						if($usrdata["ipmask"]<>"") {
+			 				$usripmask="host=".$usrdata["ipmask"]."; ";
+		 				} else {
+			 				$usripmask="";
+	 					}
+	 					if($usrdata["displayname"]<>"") {
+		 					$usrdisplayname="name=".$usrdata["displayname"]."; ";
+		 				} else {
+			 				$usrdisplayname="";
+		 				}
+						$cccamusers.="F: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres."; ".$usripmask.$usrdisplayname."}\n";
 					}
-					if($usrdata["ipmask"]<>"") {
-	 					$usripmask="host=".$usrdata["ipmask"]."; ";
- 					} else {
-	 					$usripmask="";
- 					}
- 					if($usrdata["displayname"]<>"") {
-	 					$usrdisplayname="name=".$usrdata["displayname"]."; ";
- 					} else {
-	 					$usrdisplayname="";
- 					}
-					$cccamusers.="F: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres."; ".$usripmask.$usrdisplayname."}\n";	
 				}
 		mysqli_close($mysqli);
 		$usrfile=fopen($file,"w");
@@ -129,42 +165,48 @@ function gencccamusers($file) {
 		fclose($usrfile);
 }
 
-function genmgcamdusers($file) {
+function genmgcamdusers($file,$expire) {
 	consolewrite("generating mgcamd users");
 		$mgcamdusers="";
 		$mysqli=new mysqli(DBHOST,DBUSER,DBPASS,DBNAME);
-			$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles FROM users WHERE (enabled='1' OR enabled='') AND boxtype='mgcamd'");
+			if($expire=="1") {
+				$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles,enabled,startdate,expiredate FROM users WHERE boxtype='mgcamd'");
+			} else {
+				$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles FROM users WHERE (enabled='1' OR enabled='') AND boxtype='mgcamd'");	
+			}
 				while($usrdata=$users->fetch_array()) {
-					$profres="";
-					$profvalues="";
-					if($usrdata["profiles"]=="") {
+					if($expire=="1" && checkuserdate($usrdata["startdate"],$usrdata["expiredate"],$usrdata["enabled"])=="1" || $expire=="0") {
 						$profres="";
-					} else {
-						$dbprof=unserialize($usrdata["profiles"]);
-						$cmumprof=getprofiles();
-							if($dbprof<>"" && $dbprof<>"N;") {
-								foreach($dbprof as $useprof) {
-									$profvalues.=$cmumprof[$useprof].", ";
+						$profvalues="";
+						if($usrdata["profiles"]=="") {
+							$profres="";
+						} else {
+							$dbprof=unserialize($usrdata["profiles"]);
+							$cmumprof=getprofiles();
+								if($dbprof<>"" && $dbprof<>"N;") {
+									foreach($dbprof as $useprof) {
+										$profvalues.=$cmumprof[$useprof].", ";
+									}
+									$profres=trim($profvalues);
+									$profres=substr($profres,0,-1);
+									$profdata="";
+									$profvalues="";
+								} else {
+									$profres="";
 								}
-								$profres=trim($profvalues);
-								$profres=substr($profres,0,-1);
-								$profdata="";
-								$profvalues="";
-							} else {
-								$profres="";
-							}
+						}
+						if($usrdata["ipmask"]<>"") {
+		 					$usripmask="host=".$usrdata["ipmask"]."; ";
+	 					} else {
+		 					$usripmask="";
+	 					}
+	 					if($usrdata["displayname"]<>"") {
+		 					$usrdisplayname="name=".$usrdata["displayname"]."; ";
+	 					} else {
+		 					$usrdisplayname="";
+	 					}
+						$mgcamdusers.="MG: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres."; ".$usripmask.$usrdisplayname."}\n";
 					}
-					if($usrdata["ipmask"]<>"") {
-	 					$usripmask="host=".$usrdata["ipmask"]."; ";
- 					} else {
-	 					$usripmask="";
- 					}
- 					if($usrdata["displayname"]<>"") {
-	 					$usrdisplayname="name=".$usrdata["displayname"]."; ";
- 					} else {
-	 					$usrdisplayname="";
- 					}
-					$mgcamdusers.="MG: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres."; ".$usripmask.$usrdisplayname."}\n";	
 				}
 		mysqli_close($mysqli);
 		$usrfile=fopen($file,"w");
@@ -172,32 +214,38 @@ function genmgcamdusers($file) {
 		fclose($usrfile);
 }
 
-function gennewcamdusers($file) {
+function gennewcamdusers($file,$expire) {
 	consolewrite("generating newcamd users");
 		$newcamdusers="";
 		$mysqli=new mysqli(DBHOST,DBUSER,DBPASS,DBNAME);
-			$users=$mysqli->query("SELECT user,password,profiles FROM users WHERE (enabled='1' OR enabled='') AND boxtype='newcamd'");
+			if($expire=="1") {
+				$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles,enabled,startdate,expiredate FROM users WHERE boxtype='newcamd'");
+			} else {
+				$users=$mysqli->query("SELECT user,password,displayname,ipmask,profiles FROM users WHERE (enabled='1' OR enabled='') AND boxtype='newcamd'");	
+			}
 				while($usrdata=$users->fetch_array()) {
-					$profres="";
-					$profvalues="";
-					if($usrdata["profiles"]=="") {
+					if($expire=="1" && checkuserdate($usrdata["startdate"],$usrdata["expiredate"],$usrdata["enabled"])=="1" || $expire=="0") {
 						$profres="";
-					} else {
-						$dbprof=unserialize($usrdata["profiles"]);
-						$cmumprof=getprofiles();
-							if($dbprof<>"" && $dbprof<>"N;") {
-								foreach($dbprof as $useprof) {
-									$profvalues.=$cmumprof[$useprof].", ";
+						$profvalues="";
+						if($usrdata["profiles"]=="") {
+							$profres="";
+						} else {
+							$dbprof=unserialize($usrdata["profiles"]);
+							$cmumprof=getprofiles();
+								if($dbprof<>"" && $dbprof<>"N;") {
+									foreach($dbprof as $useprof) {
+										$profvalues.=$cmumprof[$useprof].", ";
+									}
+									$profres=trim($profvalues);
+									$profres=substr($profres,0,-1);
+									$profdata="";
+									$profvalues="";
+								} else {
+									$profres="";
 								}
-								$profres=trim($profvalues);
-								$profres=substr($profres,0,-1);
-								$profdata="";
-								$profvalues="";
-							} else {
-								$profres="";
-							}
+						}
+						$newcamdusers.="USER: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres." }\n";
 					}
-					$newcamdusers.="USER: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres." }\n";	
 				}
 		mysqli_close($mysqli);
 		$usrfile=fopen($file,"w");
@@ -225,19 +273,19 @@ startpoint:
 	consolewrite("checking userfiles");
 		if(CCCAMFILE<>"") {
 			checkfile("cccam",CCCAMFILE);
-			gencccamusers(CCCAMFILE);
+			gencccamusers(CCCAMFILE,STARTEXPIREDATE);
 		} else {
 			consolewrite("no cccam file given, skipping cccam users");
 		}
 		if(MGCAMDFILE<>"") {
 			checkfile("mgcamd",MGCAMDFILE);
-			genmgcamdusers(MGCAMDFILE);
+			genmgcamdusers(MGCAMDFILE,STARTEXPIREDATE);
 		} else {
 			consolewrite("no mgcamd file given, skipping mgcamd users");
 		}
 		if(NEWCAMDFILE<>"") {
 			checkfile("newcamd",NEWCAMDFILE);
-			gennewcamdusers(NEWCAMDFILE);
+			gennewcamdusers(NEWCAMDFILE,STARTEXPIREDATE);
 		} else {
 			consolewrite("no newcamd file given, skipping newcamd users");
 		}
