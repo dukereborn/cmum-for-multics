@@ -36,6 +36,7 @@ define("NEWCAMDFILE",""); <- full path to multics newcamd user file, leave empty
 
 // misc settings
 define("PROFILEFIELD","cspvalue"); <- what cmum profile field to use for profile data (cspvalue or comment)
+define("STARTEXPIREDATE",""); <-- use internal start-/expiredate function (1=on/0=off)
 ```
 
 sample cmum-for-multics config
@@ -57,6 +58,7 @@ define("NEWCAMDFILE","/usr/share/multics/newcamdusers");
 
 // misc settings
 define("PROFILEFIELD","cspvalue");
+define("STARTEXPIREDATE","1");
 ```
 
 ## Change MultiCS to fetch users from file
@@ -107,6 +109,9 @@ Password
 Displayname
 Profiles
 IP mask
+Enabled
+Startdate
+Expiredate
 ```
 
 ## Contact me
