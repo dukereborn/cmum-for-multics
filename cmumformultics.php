@@ -23,13 +23,18 @@ define("STARTEXPIREDATE","0");
 // ** CONFIG SECTION END ** //
 
 // ** SCRIPT, DO NOT EDIT ANYTING BELOW ** //
-define("VERSION","0.3.0");
+define("VERSION","0.4.0");
 error_reporting(0);
 date_default_timezone_set(TIMEZONE);
 mb_internal_encoding(CHARSET);
+set_error_handler("internalerror");
 
 function consolewrite($input) {
 	print("[".date("Y-m-d H:i:s")."] ".$input."\n");
+}
+
+function internalerror($errno,$errstr) {
+	consolewrite("Error: [".$errno."] ".$errstr);
 }
 
 function checkconfig() {
