@@ -52,7 +52,7 @@ function checkdatabase() {
 			mysqli_close($mysqli);
 			exit;
 		} else {
-			$sql=$mysqli->query("SELECT cmumversion,dbversion FROM settings WHERE id='1'");
+			$sql=$mysqli->query("SELECT cmumversion FROM settings WHERE id='1'");
 			$data=$sql->fetch_array();
 			mysqli_close($mysqli);
 				if($data["cmumversion"]<"3.0.0") {
