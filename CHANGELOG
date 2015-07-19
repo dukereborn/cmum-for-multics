@@ -9,6 +9,7 @@ cmum-for-multics
 0.4.0 [not yet releases]
 [+] Internal error handling
 [#] Removed database version checking
+[#] Changed mgusers start from MG: to MGUSER:
 
 
 0.3.0 [2015-01-26]

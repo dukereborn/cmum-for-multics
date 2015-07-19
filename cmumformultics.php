@@ -210,7 +210,7 @@ function genmgcamdusers($file,$expire) {
 	 					} else {
 		 					$usrdisplayname="";
 	 					}
-						$mgcamdusers.="MG: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres."; ".$usripmask.$usrdisplayname."}\n";
+						$mgcamdusers.="MGUSER: ".$usrdata["user"]." ".$usrdata["password"]." { ".$profres."; ".$usripmask.$usrdisplayname."}\n";
 					}
 				}
 		mysqli_close($mysqli);
