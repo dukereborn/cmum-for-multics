@@ -55,7 +55,7 @@ function checkdatabase() {
 			$sql=$mysqli->query("SELECT cmumversion,dbversion FROM settings WHERE id='1'");
 			$data=$sql->fetch_array();
 			mysqli_close($mysqli);
-				if($data["cmumversion"]<"3.0.0" || $data["dbversion"]<"3.0.0") {
+				if($data["cmumversion"]<"3.0.0") {
 					consolewrite("unsupported cmum version, aborting");
 					exit;
 				}

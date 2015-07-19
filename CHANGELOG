@@ -7,7 +7,8 @@ cmum-for-multics
 
 
 0.4.0 [not yet releases]
-[+] internal error handling
+[+] Internal error handling
+[#] Removed database version checking
 
 
 0.3.0 [2015-01-26]
